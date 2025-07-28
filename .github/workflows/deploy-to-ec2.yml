@@ -1,0 +1,26 @@
+name: Deploy Static Files to EC2
+
+on:
+  push:
+    branches: ["main"]  # Trigger on pushes to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files to EC2 via SSH/SCP
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }} 
+          username: ${{ secrets.SSH_PRIVATE_KEY }} 
+          key: ${{ secrets.EC2_SSH_KEY }} 
+          script_stop: true 
+          scp: |
+            ./public/* /var/www/itdefined.com/   # Copies all files from local 'public/' dir
+          script: |
+            sudo chown -R www-data:www-data /var/www/itdefined.com
+            sudo systemctl restart nginx
