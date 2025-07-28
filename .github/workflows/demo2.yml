@@ -1,8 +1,8 @@
 name: Clone and List Files
 
 on:
-  push:
-    branches: []
+#   push:
+#     branches: []
     #branches-ignore: []
 
   workflow_dispatch:
