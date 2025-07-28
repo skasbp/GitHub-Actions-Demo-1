@@ -18,26 +18,33 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Create directory (if needed)
-            sudo mkdir -p /var/www/itdefined.com
+            # Set fail-fast and error handling
+            set -euo pipefail
             
-            # Navigate to directory
-            cd /var/www/itdefined.com
+            REPO_DIR="/var/www/itdefined.com"
+            GIT_REPO="https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git"
             
-            # Init git repo if doesn't exist
-            if [ ! -d .git ]; then
-              sudo git init .
-              sudo git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              echo "🔄 Fresh clone needed"
+              sudo mkdir -p "$REPO_DIR"
+              sudo git clone "$GIT_REPO" "$REPO_DIR"
+            else
+              echo "♻️ Updating existing repo"
+              cd "$REPO_DIR"
+              sudo git remote set-url origin "$GIT_REPO"
+              sudo git fetch --all
+              sudo git reset --hard origin/main
+              sudo git clean -fd
             fi
             
-            
-            sudo git fetch
-            sudo git reset --hard origin/main
-            
-            # Set permissions
-            sudo chown -R www-data:www-data .
-            sudo find . -type d -exec chmod 755 {} \;
-            sudo find . -type f -exec chmod 644 {} \;
+            # Fix permissions
+            echo "🔒 Setting permissions"
+            sudo chown -R www-data:www-data "$REPO_DIR"
+            sudo find "$REPO_DIR" -type d -exec chmod 755 {} \;
+            sudo find "$REPO_DIR" -type f -exec chmod 644 {} \;
             
             # Restart web server
+            echo "🚀 Restarting nginx"
             sudo systemctl restart nginx
+            
+            echo "✅ Deployment complete!"
