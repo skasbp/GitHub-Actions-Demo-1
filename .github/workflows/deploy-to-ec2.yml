@@ -18,31 +18,27 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            set -euo pipefail
+            set -e  # Exit immediately on error
             REPO_DIR="/var/www/itdefined.com"
             GIT_REPO="https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git"
-            
-            
-            sudo git config --global --add safe.directory "$REPO_DIR"
-            
-            if [ ! -d "$REPO_DIR/.git" ]; then
-              echo "🔄 Fresh clone needed"
-              sudo mkdir -p "$REPO_DIR"
-              sudo git clone "$GIT_REPO" "$REPO_DIR"
-              sudo chown -R ${{ secrets.SSH_USERNAME }}:www-data "$REPO_DIR"
-            else
-              echo "♻️ Updating existing repo"
-              cd "$REPO_DIR"
-              sudo chown -R ${{ secrets.SSH_USERNAME }}:www-data "$REPO_DIR"
-              git remote set-url origin "$GIT_REPO"
-              git fetch --all
-              git reset --hard origin/main
-              git clean -fd
-            fi
-            
-            # Final permissions
+
+            # Remove existing directory (if any)
+            echo "Removing old deployment..."
+            sudo rm -rf "$REPO_DIR"
+
+            # Fresh clone
+            echo "Cloning fresh repository..."
+            sudo mkdir -p "$REPO_DIR"
+            sudo git clone "$GIT_REPO" "$REPO_DIR"
+
+            # Set permissions
+            echo "Setting permissions..."
             sudo chown -R www-data:www-data "$REPO_DIR"
             sudo find "$REPO_DIR" -type d -exec chmod 755 {} \;
             sudo find "$REPO_DIR" -type f -exec chmod 644 {} \;
+
+            # Restart web server
+            echo "Restarting nginx..."
             sudo systemctl restart nginx
-            echo "✅ Deployment complete!"
+
+            echo "Fresh deployment complete!"
