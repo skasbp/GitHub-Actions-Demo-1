@@ -1,36 +1,43 @@
-name: Deploy via Git Clone on EC2
+name: Deploy to EC2
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code (local)
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Clone repo on EC2 and deploy
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Navigate to web directory
-            cd /var/www
+            # Create directory (if needed)
+            sudo mkdir -p /var/www/itdefined.com
             
-            # Remove old files (optional)
-            sudo rm -rf itdefined.com
+            # Navigate to directory
+            cd /var/www/itdefined.com
             
-            # Clone repository (using GitHub credentials)
-            sudo git clone https://${{ secrets.GH_USERNAME }}:${{ secrets.GH_TOKEN }}@github.com/your-username/your-repo.git itdefined.com
+            # Init git repo if doesn't exist
+            if [ ! -d .git ]; then
+              sudo git init .
+              sudo git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+            fi
+            
+            # Pull latest changes
+            sudo git fetch
+            sudo git reset --hard origin/main
             
             # Set permissions
-            sudo chown -R www-data:www-data /var/www/itdefined.com
-            sudo chmod -R 755 /var/www/itdefined.com
+            sudo chown -R www-data:www-data .
+            sudo find . -type d -exec chmod 755 {} \;
+            sudo find . -type f -exec chmod 644 {} \;
             
             # Restart web server
             sudo systemctl restart nginx
