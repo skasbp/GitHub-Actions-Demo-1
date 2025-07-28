@@ -19,6 +19,6 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_USER: ${{ secrets.SSH_USERNAME }}
           SOURCE: "./"
-          TARGET: "/var/www/itdefined.com/"
+          TARGET: "/var/www/itdefined.org/"
           ARGS: "-rlptDzv --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r --delete --rsync-path='sudo rsync'"
           EXCLUDE: ".git"
