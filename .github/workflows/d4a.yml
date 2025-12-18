@@ -3,7 +3,7 @@ name: List Repository Files
 
 on:
   push:
-    branches: [ main ]
+        branches: [ some-branch ]
     
   workflow_dispatch:
 

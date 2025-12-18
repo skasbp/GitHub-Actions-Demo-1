@@ -4,7 +4,7 @@ name: Matrix Test on Node.js Versions
 on:
   push:
     branches:
-      - main
+      - some
   pull_request:
 
 jobs:

@@ -1,5 +1,5 @@
 # This is demo workflow 3 for GitHub Actions.
-name: demo3
+name: Check Self-Hosted Runner Repository
 on: 
     workflow_dispatch:
     

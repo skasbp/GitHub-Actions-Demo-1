@@ -1,7 +1,9 @@
 # This workflow demonstrates sharing a folder between jobs in GitHub Actions.
 name: Share Folder Between Jobs
 
-on: [push]
+on:
+  push:
+        branches: [ some-branch ]
 
 jobs:
   job1:
