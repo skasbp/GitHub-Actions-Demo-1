@@ -2,7 +2,7 @@ name: Deploy to EC2 using easingthemes
 
 on:
   push:
-    branches: [main]
+    branches: [some-branch]
   workflow_dispatch:
 
 jobs:
