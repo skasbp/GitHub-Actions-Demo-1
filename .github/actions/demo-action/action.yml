@@ -8,14 +8,14 @@ inputs:
 outputs:
   demo-output:
     description: 'Output from the demo action'
-    value: ${{ steps.action-output.outputs.result }}
+    value: ${{ steps.set_output.outputs.result }}
 runs:
   using: 'composite'
   steps:
     - name: Run demo command
       run: echo "Hello, ${{ inputs.name }}!"
       shell: bash
-    - id: action-output
+    - id: set_output
       name: Set output
       run: |
         echo "result=Action executed successfully" >> $GITHUB_OUTPUT
