@@ -10,5 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+  console.log(`🚀 Server started successfully!`);
+  console.log(`📡 App listening at http://localhost:${port}`);
+  console.log(`🔗 Open your browser and visit: http://localhost:${port}`);
 });
