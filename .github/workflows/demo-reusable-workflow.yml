@@ -1,0 +1,38 @@
+# This workflow demonstrates how to call the reusable Node.js setup workflow.
+# This workflow demonstrates how to call and use the reusable Node.js setup workflow.
+name: Demo - Using Reusable Workflow
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: 'Node.js version to use'
+        required: false
+        default: '20'
+        type: string
+      target_environment:
+        description: 'Target environment'
+        required: false
+        default: 'production'
+        type: string
+
+jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/reusable-node-setup.yml
+    with:
+      node-version: ${{ inputs.node_version || '18' }}
+      environment: ${{ inputs.target_environment || 'development' }}
+
+  deploy-demo:
+    needs: call-reusable-workflow
+    runs-on: ubuntu-latest
+    if: needs.call-reusable-workflow.outputs.build-status == 'success'
+    steps:
+      - name: Deploy to demo environment
+        run: |
+          echo "Deployment started..."
+          echo "Build status: ${{ needs.call-reusable-workflow.outputs.build-status }}"
+          echo "Environment: ${{ inputs.target_environment || 'development' }}"
+          echo "Deployment completed successfully!"

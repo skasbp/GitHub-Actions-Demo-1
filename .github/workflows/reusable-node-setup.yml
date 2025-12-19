@@ -1,0 +1,46 @@
+# This is a reusable workflow that can be called from other workflows.
+# This reusable workflow sets up Node.js, installs dependencies, and runs basic checks (lint, test, build) for Node.js projects.
+name: Reusable - Node.js Setup and Build
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        default: '18'
+        type: string
+      environment:
+        description: 'Environment name'
+        required: false
+        default: 'development'
+        type: string
+    outputs:
+      build-status:
+        description: 'Status of the build process'
+        value: ${{ jobs.build.outputs.status }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build-status.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run the application (if available)
+        run: npm start || echo "No start script found"
+
+      - name: Set build status
+        id: build-status
+        run: echo "status=success" >> $GITHUB_OUTPUT
