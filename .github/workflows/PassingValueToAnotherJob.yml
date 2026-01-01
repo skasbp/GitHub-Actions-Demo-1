@@ -1,0 +1,34 @@
+# This workflow demonstrates passing data between jobs in GitHub Actions using job outputs.
+name: Pass Data Between Jobs
+
+on: [push]
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    outputs:
+      my_message: ${{ steps.set_output.outputs.message }}
+      my_second_message: ${{ steps.set_output.outputs.second_message }}
+    steps:
+      - name: Set output message
+        id: set_output
+        run: |
+          message="Hello from Job 1"
+          second_message="Second message from Job 1"
+          echo "message=$message" >> $GITHUB_OUTPUT
+          echo "second_message=$second_message" >> $GITHUB_OUTPUT
+          echo "Set output: $message"
+          echo "Set second output: $second_message"
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print received value
+        run: |
+          echo "Message from job1: ${{ needs.job1.outputs.my_message }}"
+          echo "Second message from job1: ${{ needs.job1.outputs.my_second_message }}"
+          if [ -z "${{ needs.job1.outputs.my_message }}" ]; then
+            echo "Warning: No message received from job1"
+            exit 0
+          fi
