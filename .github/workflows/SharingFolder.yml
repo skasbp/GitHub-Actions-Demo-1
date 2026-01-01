@@ -1,0 +1,37 @@
+# This workflow demonstrates sharing a folder between jobs in GitHub Actions.
+name: Share Folder Between Jobs
+
+on:
+  push:
+        branches: [ some-branch ]
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create shared folder
+        run: |
+          mkdir build
+          echo "File from Job 1" > build/output.txt
+
+      - name: Upload build folder as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-folder
+          path: build/
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download shared folder
+        uses: actions/download-artifact@v4
+        with:
+          name: shared-folder
+          path: ./shared-folder
+
+      - name: Use shared folder
+        run: |
+          echo "Contents of shared folder:"
+          ls ./shared-folder
+          cat ./shared-folder/output.txt
