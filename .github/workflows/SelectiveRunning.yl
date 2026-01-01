@@ -1,0 +1,36 @@
+# This workflow allows selective running of jobs in GitHub Actions.
+name: Selective Job Runner
+on:
+  workflow_dispatch:
+    inputs:
+      job_to_run:
+        description: 'Which job to run (job1, job2, job3, all)'
+        required: true
+        type: choice
+        options:
+          - job1
+          - job2
+          - job3
+          - all
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.job_to_run == 'job1' || github.event.inputs.job_to_run == 'all' }}
+    steps:
+      - name: Run Job 1
+        run: echo "Running Job 1"
+
+  job2:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.job_to_run == 'job2' || github.event.inputs.job_to_run == 'all' }}
+    steps:
+      - name: Run Job 2
+        run: echo "Running Job 2"
+
+  job3:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.job_to_run == 'job3' || github.event.inputs.job_to_run == 'all' }}
+    steps:
+      - name: Run Job 3
+        run: echo "Running Job 3"
