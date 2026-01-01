@@ -1,0 +1,27 @@
+# This workflow demonstrates passing files between jobs using artifacts in GitHub Actions.
+name: Pass File Between Jobs
+
+on: workflow_dispatch
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create data
+        run: echo "12345" > number.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: job-data
+          path: number.txt
+
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+
+      - name: Read data
+        run: cat number.txt
