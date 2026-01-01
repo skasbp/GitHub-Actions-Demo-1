@@ -23,6 +23,7 @@ jobs:
 
   job3:
     needs: job2
+    if : always()   #Run even on failed jobs
     runs-on: ubuntu-latest
     steps:
       - name: Step 3
