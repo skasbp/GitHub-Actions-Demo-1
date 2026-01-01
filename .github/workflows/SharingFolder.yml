@@ -3,7 +3,7 @@ name: Share Folder Between Jobs
 
 on:
   push:
-        branches: [ some-branch ]
+        branches: [ main ]
 
 jobs:
   job1:
