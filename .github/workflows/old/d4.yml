@@ -1,5 +1,5 @@
 # This is demo workflow 4 for GitHub Actions.
-name: demo4
+name: demo4newway
 
 on:
     workflow_dispatch:
@@ -17,3 +17,4 @@ jobs:
             - run: npm start &
             - run: sleep 5
             - run: curl -I http://localhost:3001 || exit 1
+
