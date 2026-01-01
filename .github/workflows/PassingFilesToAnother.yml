@@ -1,4 +1,4 @@
-# This workflow demonstrates passing files between jobs using artifacts in GitHub Actions.
+# This workflow demonstrates passing files between jobs using artifacts
 name: Pass File Between Jobs
 
 on: workflow_dispatch
@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
+        with:
+          name: job-data        # ✅ must match upload name
+          path: .               # optional, current directory
 
       - name: Read data
-        run: cat number.txt
+        run: cat number.txt     # ✅ now works
