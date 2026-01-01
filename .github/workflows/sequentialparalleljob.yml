@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Step 1
-        run: exit 1"  # Simulate failure
+        run: exit 1  # Simulate failure
 
   job2:
     needs: job3
